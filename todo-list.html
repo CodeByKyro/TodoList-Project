@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- <meta name="viewport" content="width, initial-scale=1.0"> -->
+    <link rel="stylesheet" href="todo-styling.css">
+    <title>Document</title>
+</head>
+<body>
+    <header>
+        <h1>Todo List</h1>
+        <input type="text" name="search" id="search" placeholder="Search tasks...">
+     </header>   
+
+    <div class="container">
+        <div id="alertBox"></div>
+
+        <div class="todo-entry" id="todoEntry">
+            <input type="text" id="todoInput" placeholder="Add a new task">
+            <input type="button" id="addButton" value="Add">
+        </div>
+
+        <div class="todo-list">
+            <h2>Tasks</h2>
+            <ul id="list">
+                <!-- List items will be added here dynamically -->
+            </ul>
+        </div>
+    </div>
+
+    <script src="todo-action.js"></script>
+</body>
+</html>
