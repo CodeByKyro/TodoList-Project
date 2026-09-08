@@ -1,4 +1,5 @@
 // Grab Elements
+// Make this use objects
 const todoEntry = document.querySelector("#todoEntry");
 const todoInput = document.querySelector("#todoInput");
 const todoButton = document.querySelector("#addButton");
