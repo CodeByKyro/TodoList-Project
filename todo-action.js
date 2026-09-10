@@ -1,21 +1,16 @@
-// Grab Elements
-// Make this use objects
-const todoEntry = document.querySelector("#todoEntry");
-const todoInput = document.querySelector("#todoInput");
-const todoButton = document.querySelector("#addButton");
-const alertBox = document.querySelector("#alertBox");
-const todoList = document.querySelector("#list");
-const searchBar = document.querySelector('#search');
-
+// Grab Elements into an object
+const Elements = {
+    todoEntry : document.querySelector("#todoEntry"),
+    todoInput : document.querySelector('#todoInput'),
+    todoButton : document.querySelector("#addButton"),
+    todoList : document.querySelector("#list"),
+    todoForm : document.querySelector('#todoEntry'),
+    alertBox : document.querySelector("#alertBox"),
+    searchBar : document.querySelector('#search')
+}
 
 // Change title of the page
-document.title = "Todo List";
-
-
-// Add Event Listeners
-todoButton.addEventListener("click", addTodo);
-todoInput.addEventListener("keydown", enterEvent);
-searchBar.addEventListener('keyup', filterTasks);
+document.title = "MyTodoListApp";
 
 
 // Message/Alert texts and color
@@ -27,81 +22,113 @@ const deletionMessage = 'Todo deleted successfully.';
 const deletionColoration = 'deletion'
 
 
-// Create a function to display message
-function displayMessage (message, coloration) {
-    const alertText = document.createElement("p");
-    alertText.textContent = message;
-    alertText.classList.add(coloration);
-    
-    alertBox.appendChild(alertText);
+// UI Class
+class UI {
+    static displayTodos() {
+        const todos = Storage.getTodos();
 
-    setTimeout(() => {
-        alertText.remove();
-    }, 3000);
-}
-
-
-// Create a function to add todo items
-function addTodo(e) {
-    if (todoInput.value === "") {
-        // Display error message
-        displayMessage(errorMessage, errorColoration);
-    } else {
-        // Add todo item to the list
-        const todoItem = document.createElement("li");
-        todoItem.textContent = todoInput.value.toLowerCase();
-
-        const deleteButton = document.createElement("button");
-        deleteButton.textContent = "X";
-
-        todoItem.appendChild(deleteButton);
-
-        todoList.firstChild ? todoList.insertBefore(todoItem, todoList.firstChild) : todoList.appendChild(todoItem);
-        
-        todoInput.value = "";
-
-        // Display success message
-        displayMessage(successMessage, successColoration);
-
-        // Add event listener to delete button
-        deleteButton.addEventListener('click', (e) => {
-            if(confirm('Are you sure?')) {
-                e.target.parentElement.remove();
-
-                // Display deletion message
-                displayMessage(deletionMessage, deletionColoration);
-            }
-        });
-    }
-
-};
-
-
-// Create a function to call addTodo() if the enter key is down
-function enterEvent (e) {
-    // console.log(e);
-    if(e.key === 'Enter') {
-        addTodo();
-    }
-}
-
-
-// Create a function to filter/search for todo tasks
-function filterTasks (e) {
-    // Get the text value of the search in lowercase 
-    const text = e.target.value.toLowerCase();
-
-    const todoItems = document.querySelectorAll("#list li");
-    
-    // Make the todo items an array
-  Array.from(todoItems).forEach(item => {
-        let itemName = item.firstChild.textContent;
-
-        if (itemName.toLowerCase().indexOf(text) != -1 ) {
-            item.style.display = '';
-        } else {
-            item.style.display = 'none';
+        for(const todo of todos) {
+            const todoItem = document.createElement('li');
+            const deletionButton = document.createElement('button');
+            todoItem.textContent = todo;
+            deletionButton.textContent = 'X';
+            deletionButton.addEventListener('click', UI.removeTodo)
+            
+            todoItem.appendChild(deletionButton);
+            
+            Elements.todoList.firstChild ? Elements.todoList.insertBefore(todoItem, Elements.todoList.firstChild) : Elements.todoList.appendChild;
         }
-    });
+    }
 
+    static displayAlert(message, color) {
+        const alert = document.createElement('p');
+        alert.textContent = message;
+        alert.className = color;
+
+        Elements.alertBox.appendChild(alert);
+
+        setTimeout(() => {alert.remove()}, 3000)
+    }
+
+    static addTodo(e) {
+        e.preventDefault();
+
+        if (Elements.todoInput.value === "") {
+            UI.displayAlert(errorMessage, errorColoration);
+        } else {
+            // Add todo item to the list
+            const todoItem = document.createElement("li");
+            todoItem.textContent = Elements.todoInput.value.toLowerCase();
+
+            const deleteButton = document.createElement("button");
+            deleteButton.textContent = "X";
+            deleteButton.addEventListener('click', UI.removeTodo)
+
+            todoItem.appendChild(deleteButton);
+
+            Elements.todoList.firstChild ? Elements.todoList.insertBefore(todoItem, Elements.todoList.firstChild) : Elements.todoList.appendChild(todoItem);
+            
+            //Add to localStorage
+            Storage.addTodo(Elements.todoInput.value.toLowerCase());
+
+            Elements.todoInput.value = "";
+
+            UI.displayAlert(successMessage, successColoration);
+        }
+    }
+
+    static removeTodo(e) {
+        e.target.parentElement.remove();
+
+        // Remove from local storage
+        Storage.removeTodo(e.target.textContent);
+
+        // Display alertMessage
+        UI.displayAlert(deletionMessage, deletionColoration);
+    }
+
+    static searchTodoList(e) {
+            const text = e.target.value.toLowerCase().trim();
+            const todoItems = document.querySelectorAll("#list li");
+        
+            todoItems.forEach((item) => {
+                const itemText = item.textContent.replace("X", "").toLowerCase().trim();
+                item.style.display = itemText.includes(text) ? "" : "none";
+            });
+        }
+    }
+
+
+// Storage Class
+class Storage {
+    static getTodos() {
+        let todos;
+        
+        localStorage.getItem('todos') ? todos = JSON.parse(localStorage.getItem('todos')) : todos = [];
+
+        return todos;
+    }
+
+    static addTodo(todo) {
+        const todos = Storage.getTodos();
+        todos.push(todo);
+
+        localStorage.setItem('todos', JSON.stringify(todos));
+    }
+
+    static removeTodo(todo) {
+        const todos = Storage.getTodos();
+        
+        todos.forEach((todoItem, index) => {
+            if(todo) { todos.splice(index, 1) };
+        })
+
+        localStorage.setItem('todos', JSON.stringify(todos));
+    }
 }
+
+
+// Add Event Listeners
+document.addEventListener('DOMContentLoaded', UI.displayTodos)
+Elements.todoForm.addEventListener("submit", UI.addTodo);
+Elements.searchBar.addEventListener('keyup', UI.searchTodoList);
