@@ -129,6 +129,22 @@ header h1 {
     background-color: #c82333;
 }
 
+.clearBtn {
+    padding: 0.5rem 1rem;
+    background-color: #007bff99;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: block;
+    width: 100%;
+    margin: 0.8rem 0;
+}
+
+.clearBtn:hover {
+    background-color: #0056b399;
+}
+
 .error {
     background-color: #f8d7da77;
     color: #721c24;
