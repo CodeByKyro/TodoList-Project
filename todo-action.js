@@ -4,6 +4,7 @@ const Elements = {
     todoInput : document.querySelector('#todoInput'),
     todoButton : document.querySelector("#addButton"),
     todoList : document.querySelector("#list"),
+    todoListContainer : document.querySelector('.todo-list'),
     todoForm : document.querySelector('#todoEntry'),
     alertBox : document.querySelector("#alertBox"),
     searchBar : document.querySelector('#search')
@@ -15,11 +16,12 @@ document.title = "MyTodoListApp";
 
 // Message/Alert texts and color
 const successMessage = 'Todo added successfully.';
-const successColoration = 'success'
+const successColoration = 'success';
 const errorMessage = 'Please enter a todo task.';
-const errorColoration = 'error'
+const errorColoration = 'error';
 const deletionMessage = 'Todo deleted successfully.';
-const deletionColoration = 'deletion'
+const deletionColoration = 'deletion';
+const clearMessage = 'Todo list cleared successfully.';
 
 
 // UI Class
@@ -87,6 +89,18 @@ class UI {
         UI.displayAlert(deletionMessage, deletionColoration);
     }
 
+    static clearTodoList() {
+        // Clear List
+        const todoItems = document.querySelectorAll('#list li');
+        todoItems.forEach((item) => item.remove());
+
+        // Clear from local storage
+        Storage.clearAllTodos();
+
+        // Display alertMessage
+        UI.displayAlert(clearMessage, deletionColoration)
+    }
+
     static searchTodoList(e) {
             const text = e.target.value.toLowerCase().trim();
             const todoItems = document.querySelectorAll("#list li");
@@ -125,8 +139,18 @@ class Storage {
 
         localStorage.setItem('todos', JSON.stringify(todos));
     }
+
+    static clearAllTodos() {
+        localStorage.removeItem('todos');
+    }
 }
 
+// Add in a clear all task button
+const clearAllButton = document.createElement('button');
+clearAllButton.textContent = "Clear All Tasks";
+clearAllButton.className = 'clearBtn';
+clearAllButton.addEventListener('click', UI.clearTodoList);
+Elements.todoListContainer.insertBefore(clearAllButton, Elements.todoList);
 
 // Add Event Listeners
 document.addEventListener('DOMContentLoaded', UI.displayTodos)
