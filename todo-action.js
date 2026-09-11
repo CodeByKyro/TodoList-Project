@@ -91,7 +91,7 @@ class UI {
 
     static clearTodoList() {
         // Clear List
-        const todoItems = document.querySelectorAll('#list li');
+        const todoItems = Array.from(Elements.todoList.children);
         todoItems.forEach((item) => item.remove());
 
         // Clear from local storage
@@ -103,7 +103,7 @@ class UI {
 
     static searchTodoList(e) {
             const text = e.target.value.toLowerCase().trim();
-            const todoItems = document.querySelectorAll("#list li");
+            const todoItems = Array.from(Elements.todoList.children);
         
             todoItems.forEach((item) => {
                 const itemText = item.textContent.replace("X", "").toLowerCase().trim();
