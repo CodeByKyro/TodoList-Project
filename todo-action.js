@@ -43,6 +43,8 @@ class UI {
     }
 
     static displayAlert(message, color) {
+        Elements.alertBox.innerHTML = '';
+        
         const alert = document.createElement('p');
         alert.textContent = message;
         alert.className = color;
